@@ -11,6 +11,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <random>
+#include <algorithm>
 using namespace std;
 
 class Grafo {
@@ -138,6 +141,7 @@ private:
     };
     
     vector<NdoVrt> vectorNodos;
+    int cntVrt;
 };
 
 #endif	/* GRAFO_H */
