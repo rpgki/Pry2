@@ -14,6 +14,8 @@
 #include <chrono>
 #include <random>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 using namespace std;
 
 class Grafo {

@@ -23,8 +23,12 @@ void visualizar(Grafo&g){
 }
 
 int main(int argc, char** argv) {
-    Grafo grf(200, 88, 0.5); // 200 nodos, con promedio de 88 adyacencias por nodo y beta = 0.5
+    /*Grafo grf(200, 88, 0.5); // 200 nodos, con promedio de 88 adyacencias por nodo y beta = 0.5
     Simulador sml(grf);
-    visualizar(grf);
+    visualizar(grf);*/
+    
+    Grafo g("redMuyPeq.txt");
+    
+    cout << g.obtTotVrt() << endl;
     return 0;
 }
