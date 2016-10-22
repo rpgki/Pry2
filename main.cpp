@@ -27,8 +27,16 @@ int main(int argc, char** argv) {
     Simulador sml(grf);
     visualizar(grf);*/
     
-    Grafo g("redMuyPeq.txt");
+    Grafo g("redPeq.txt");
+    Grafo g2(100,44,0.2);
     
-    cout << g.obtTotVrt() << endl;
+    g.modEst(4,Grafo::I);
+    g2.modEst(4,Grafo::R);
+    
+    Grafo g3(g);
+    
+    cout << g.obtEst(4) << endl;
+    cout << g2.coeficienteAgrupamiento() << endl;
+    cout << g3.obtEst(4) << endl;
     return 0;
 }

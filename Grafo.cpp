@@ -8,17 +8,24 @@
 #include "Grafo.h"
 
 Grafo::Grafo(int N, int K, double beta) {
+    vector<int> sonAdyDeI;
+    sonAdyDeI.reserve(N);
     cntVrt = N; //Se guarda la cantidad de vertices escogidas por el usuario
     vectorNodos.reserve(cntVrt); //Se asigna el tamaño de memoria al vector
-    bool aux; //Se crea auxiliar para buscar elementos dentro del vector de adyacencias
+    bool aux = false; bool aux2 = false; //Se crea auxiliar para buscar elementos dentro del vector de adyacencias
     //int auxInt; //Auxiliar para borrar un elemento de la lista de adyacencias
     vector<int>::iterator it; //Se inicializa el iterador para el vector de adyacentes.
+    vector<int>::iterator it2;//Iterador auxiliar para borrar elementos.
+    NdoVrt v;
 
     for(int i = 0; i < N; i++){ //Se alambran los vértices con sus vecinos de acuerdo al parámetro K
+        v.lstAdy.clear(); //Se limpia el vector
         for(int j = 0; j < N; j++){
-            if((abs(i-j)%(N - 1 -(K/2)) > 0) && ((abs(i-j)%(N - 1 -(K/2)) <= K/2)))
-                vectorNodos.at(i).lstAdy.push_back(j);
+            if((abs(i-j)%(N - 1 -(K/2)) > 0) && ((abs(i-j)%(N - 1 -(K/2)) <= K/2))){
+                v.lstAdy.push_back(j); //Se guarda el adyacente
+            }
         }
+        vectorNodos.emplace(vectorNodos.begin()+i,v); //Se ingresa en el vector
     }
 
     // Se construye el generador de números al azar basado en una semilla tomada
@@ -30,32 +37,35 @@ Grafo::Grafo(int N, int K, double beta) {
 
 
     //#2: se re-alambran las conexiones usando beta
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < N; i++){
         for (int j = i + 1; j < N; j++) {
+            aux = false;
             // Genera un número al azar entre 0 y 1
-            int numAzar = dados_0_1(generator);
+            double numAzar = dados_0_1(generator);
             it = find(vectorNodos.at(i).lstAdy.begin(),vectorNodos.at(i).lstAdy.end(),j); //Se guarda un iterador si se encuentra el vertice adyacente en i.
-            if(it != vectorNodos.at(i).lstAdy.end()) //Si se encuentra el vertice en el vector entonces el auxiliar es verdadero.
+            if(it != vectorNodos.at(i).lstAdy.end()){ //Si se encuentra el vertice en el vector entonces el auxiliar es verdadero.
                 aux = true;
+                it2 = find(vectorNodos.at(j).lstAdy.begin(),vectorNodos.at(j).lstAdy.end(),i);
+            }
             else
                 aux = false;
             if (aux == true &&(numAzar <= beta)) { // se re-alambra
                 // se borra j de la lstAdy de i
-                vectorNodos.at(i).lstAdy.erase(vectorNodos.at(i).lstAdy.begin()+j);
-                vectorNodos.at(j).lstAdy.erase(vectorNodos.at(j).lstAdy.begin()+i);
+                vectorNodos.at(i).lstAdy.erase(it);
+                vectorNodos.at(j).lstAdy.erase(it2);
                 
-                vector<int>sonAdyDeI;
-                sonAdyDeI.reserve(N);
+                sonAdyDeI.clear();
                 int cntNoAdyDeI = 0;
 
                 // se cuentan e identifican todos los nodos no adyacentes a i
                 for (int k = 0; k < N; k++) {
+                    aux2 = false;
                     it = find(vectorNodos.at(i).lstAdy.begin(),vectorNodos.at(i).lstAdy.end(),k); //Se guarda un iterador si se encuentra el vertice adyacente en k.
                     if(it != vectorNodos.at(i).lstAdy.end()) //Si se encuentra el vertice en el vector entonces el auxiliar es verdadero.
-                        aux = true;
+                        aux2 = true;
                     else
-                        aux = false;
-                    if (aux == true && (k != i)) {
+                        aux2 = false;
+                    if (aux2 == true && (k != i)) {
                         sonAdyDeI[k] = false;
                         cntNoAdyDeI++;
                     } else sonAdyDeI[k] = true;
@@ -78,14 +88,23 @@ Grafo::Grafo(int N, int K, double beta) {
                 }
 
                 // se re-alambra o sustituye j por k
-                vectorNodos.at(i).lstAdy.push_back(nuevaAdy);
-                vectorNodos.at(nuevaAdy).lstAdy.push_back(i);
+                vectorNodos[i].lstAdy.push_back(nuevaAdy);
+                sort( vectorNodos[i].lstAdy.begin(), vectorNodos[i].lstAdy.end());
+                vectorNodos[nuevaAdy].lstAdy.push_back(i);
+                sort( vectorNodos[nuevaAdy].lstAdy.begin(), vectorNodos[nuevaAdy].lstAdy.end());
             }
         }
+    }
 }
 
 Grafo::Grafo(const Grafo& orig) {
-
+    int tam = orig.cntVrt; //Se guarda la cantidad de vértices guardadas en *this
+    vector<NdoVrt> copiaVec; //Se crea un vector copia.
+    copiaVec = orig.vectorNodos; //El arreglo guardado en *this se copia en el objeto inicializado anteriormente
+    vectorNodos.clear(); //Se limpia el vector de nodos.
+    vectorNodos.reserve(tam);
+    vectorNodos = copiaVec;
+    cntVrt = tam; //Se guarda el tamaño del arreglo
 }
 
 Grafo::Grafo(string nArch) {
@@ -104,6 +123,7 @@ Grafo::Grafo(string nArch) {
     cntVrt = stoi(hilera); //se convierte la primera linea a entero
     vectorNodos.reserve(cntVrt); //Se asigna el tamaño de memoria al vector
     while (getline(grafo, hilera)) { //mientras no se acaben las hileras del archivo
+        v.lstAdy.clear();
         for (int i = 0; i < hilera.size() - 1; i++) { //este ciclo lee todos los caracteres de la hilera
             if (hilera[i] != ' ') {
                 aux = aux + hilera[i]; //se guarda el caracter en aux
