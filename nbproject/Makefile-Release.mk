@@ -44,11 +44,13 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
-	${TESTDIR}/TestFiles/f1
+	${TESTDIR}/TestFiles/f1 \
+	${TESTDIR}/TestFiles/f2
 
 # Test Object Files
 TESTOBJECTFILES= \
-	${TESTDIR}/tests/PbaGrafo.o
+	${TESTDIR}/tests/PbaGrafo.o \
+	${TESTDIR}/tests/PbaSimulador.o
 
 # C Compiler Flags
 CFLAGS=
@@ -100,11 +102,21 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/PbaGrafo.o ${OBJECTFILES:%.o=%_nomain.
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PbaSimulador.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+
 
 ${TESTDIR}/tests/PbaGrafo.o: tests/PbaGrafo.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PbaGrafo.o tests/PbaGrafo.cpp
+
+
+${TESTDIR}/tests/PbaSimulador.o: tests/PbaSimulador.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PbaSimulador.o tests/PbaSimulador.cpp
 
 
 ${OBJECTDIR}/Grafo_nomain.o: ${OBJECTDIR}/Grafo.o Grafo.cpp 
@@ -151,6 +163,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	@if [ "${TEST}" = "" ]; \
 	then  \
 	    ${TESTDIR}/TestFiles/f1 || true; \
+	    ${TESTDIR}/TestFiles/f2 || true; \
 	else  \
 	    ./${TEST} || true; \
 	fi

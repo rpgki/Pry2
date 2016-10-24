@@ -129,14 +129,11 @@ Grafo::Grafo(string nArch) {
                 aux = aux + hilera[i]; //se guarda el caracter en aux
             } else {
                 v.lstAdy.push_back(stoi(aux));
-                vectorNodos.emplace(vectorNodos.begin()+pos,v);
-                //vectorNodos.at(pos).lstAdy.push_back(stoi(aux)); //se cambia el caracter a entero y se asigna a la lista correspondiente a cada vertice
                 aux = "";
             }
         }
         v.lstAdy.push_back(stoi(aux));
         vectorNodos.emplace(vectorNodos.begin()+pos,v);
-        //vectorNodos.at(pos).lstAdy.push_back(stoi(aux)); //se cambia el caracter a entero y se asigna a la lista correspondiente a cada vertice
         aux = "";
         pos = pos + 1; //se aumenta el contador de posiciones para el arreglo de vertices
     }
@@ -169,7 +166,7 @@ const vector<int>& Grafo::obtAdy(int vrt) const {
 }
 
 int Grafo::obtTotVrt() const {
-    return cntVrt; //Retorna la cantidad de vertices en *this
+    return vectorNodos.size(); //Retorna la cantidad de vertices en *this
 }
 
 int Grafo::obtTotAdy() const {
@@ -240,52 +237,40 @@ double Grafo::coeficienteAgrupamiento() const {
 }
 
 void Grafo::modEst(int vrt, E ne) {
-    NdoVrt v;
-    v.std = ne;
-    vectorNodos.emplace(vectorNodos.begin()+vrt,v);
+    vectorNodos[vrt].std = ne;
 }
 
 void Grafo::modTmpChqVrs(int vrt, int nt) {
-    NdoVrt v;
-    v.tmpChqVrs = nt;
-    vectorNodos.emplace(vectorNodos.begin()+vrt,v);
+    vectorNodos[vrt].tmpChqVrs = nt;
 }
 
 void Grafo::actCntChqVrs(int vrt) {
-    NdoVrt v;
     if (vectorNodos[vrt].cntChqVrs > vectorNodos[vrt].tmpChqVrs) {
-        v.cntChqVrs = 0;
-        vectorNodos.emplace(vectorNodos.begin() + vrt, v);
+        vectorNodos[vrt].cntChqVrs = 0;
     } else {
-        v.cntChqVrs = vectorNodos[vrt].cntChqVrs;
-        v.cntChqVrs++;
-        vectorNodos.emplace(vectorNodos.begin() + vrt, v);
+        vectorNodos[vrt].cntChqVrs++;
     }
 }
 
 void Grafo::infectar(int ios) {
-    NdoVrt v;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); //Se establece la semilla
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> nmAltr(0, cntVrt - 1); //Se genera una distribución uniforme de enteros entre 0 y la cantidad de vertices - 1
     while (ios != 0) {
         int num = nmAltr(generator); //Se guarda el número generado
         if (vectorNodos[num].std != I) {// Se infectan aleatoriamente los nodos de acuerdo al valor ingresado en ios
-            v.std = I;
-            vectorNodos.emplace(vectorNodos.begin()+num,v);
+            vectorNodos[num].std = I;
             ios--;
         }
     }
 }
 
 void Grafo::azarizarTmpChqVrs(int maxTmp) {
-    NdoVrt v;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); //Se crea la semilla
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> nmAltr(1, maxTmp); //Se genera una distribución uniforme desde 1 hasta el valor ingresado por en vcf
     for (int i = 0; i < cntVrt; i++) {
         int num = nmAltr(generator); //Se guarda el número generado
-        v.tmpChqVrs = num;
-        vectorNodos.emplace(vectorNodos.begin()+i,v); //Se asigna el número generado al temporizador del vertice i
+        vectorNodos[i].tmpChqVrs = num; //Se asigna el número generado al temporizador del vertice i
     }
 }

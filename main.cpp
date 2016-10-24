@@ -27,16 +27,20 @@ int main(int argc, char** argv) {
     Simulador sml(grf);
     visualizar(grf);*/
     
-    Grafo g("redPeq.txt");
+    Grafo g("redMini.txt");
+    cout << g.obtTotVrt() << endl;
     Grafo g2(100,44,0.2);
     
-    g.modEst(4,Grafo::I);
-    g2.modEst(4,Grafo::R);
+    g.modEst(1,Grafo::I); g.modEst(2,Grafo::I);
+    //Simulador sim(g);
+    //sim.iniciarSimPba(1.0,5,0.2,0.2);
+    //sim.simularPba();
+    //g2.modEst(4,Grafo::R);
     
     Grafo g3(g);
     
-    cout << g.obtEst(4) << endl;
+    cout << g.obtTotVrt() << endl;
     cout << g2.coeficienteAgrupamiento() << endl;
-    cout << g3.obtEst(4) << endl;
+    cout << g3.obtEst(1) << endl;
     return 0;
 }
