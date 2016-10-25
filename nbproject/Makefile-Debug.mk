@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/Datos.o \
 	${OBJECTDIR}/Grafo.o \
 	${OBJECTDIR}/Simulador.o \
 	${OBJECTDIR}/main.o
@@ -66,7 +67,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-lfreeglut -lopengl32
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -75,6 +76,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/pry2.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/pry2 ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/Datos.o: Datos.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -s -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Datos.o Datos.cpp
 
 ${OBJECTDIR}/Grafo.o: Grafo.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -118,6 +124,19 @@ ${TESTDIR}/tests/PbaSimulador.o: tests/PbaSimulador.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -s -I. -std=c++11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PbaSimulador.o tests/PbaSimulador.cpp
 
+
+${OBJECTDIR}/Datos_nomain.o: ${OBJECTDIR}/Datos.o Datos.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Datos.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -s -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Datos_nomain.o Datos.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Datos.o ${OBJECTDIR}/Datos_nomain.o;\
+	fi
 
 ${OBJECTDIR}/Grafo_nomain.o: ${OBJECTDIR}/Grafo.o Grafo.cpp 
 	${MKDIR} -p ${OBJECTDIR}
